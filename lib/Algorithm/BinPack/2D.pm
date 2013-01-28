@@ -131,20 +131,20 @@ sub pack_bins {
     map {
         my $bin   = $_;
         my $items = [];
-        filter_filled_node($bin, $items);
+        my ($max_width, $max_height) = filter_filled_node($bin, $items, 0, 0);
         +{
-            width  => $bin_width,
-            height => $bin_height,
+            width  => $max_width,
+            height => $max_height,
             items  => $items,
-          }
+        }
     } @bins;
 } ## end sub pack_bins
 
 sub filter_filled_node {
-    my ($bin, $filtered_nodes) = @_;
+    my ($bin, $filtered_nodes, $max_width, $max_height) = @_;
 
-    filter_filled_node($bin->{left},  $filtered_nodes) if $bin->{left};
-    filter_filled_node($bin->{right}, $filtered_nodes) if $bin->{right};
+    ($max_width, $max_height) = filter_filled_node($bin->{left},  $filtered_nodes, $max_width, $max_height) if $bin->{left};
+    ($max_width, $max_height) = filter_filled_node($bin->{right}, $filtered_nodes, $max_width, $max_height) if $bin->{right};
 
     if ($bin->{filled}) {
         push @$filtered_nodes,
@@ -155,7 +155,12 @@ sub filter_filled_node {
             width  => $bin->{width},
             height => $bin->{height},
           };
+        my $max_x = $bin->{x} + $bin->{width};
+        my $max_y = $bin->{y} + $bin->{height};
+        $max_width = $max_x if $max_width < $max_x;
+        $max_height = $max_y if $max_height < $max_y;
     }
+    ($max_width, $max_height);
 }
 
 sub make_new_bin {

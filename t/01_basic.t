@@ -24,8 +24,8 @@ subtest 'Basic algorithm' => sub {
         \@bins,
         [
             {
-                'width'  => 500,
-                'height' => 400,
+                'width'  => 450,
+                'height' => 350,
                 'items'  => [
                     {
                         'width'  => 450,
@@ -85,8 +85,8 @@ subtest 'Basic algorithm' => sub {
                 ]
             },
             {
-                'width'  => 500,
-                'height' => 400,
+                'width'  => 200,
+                'height' => 100,
                 'items'  => [
                     {
                         'width'  => 200,
