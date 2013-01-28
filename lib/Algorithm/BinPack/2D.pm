@@ -257,6 +257,7 @@ C<Algorithm::BinPack>
 Tasuku SUENAGA a.k.a. gunyarakun E<lt>tasuku-s-cpan ATAT titech.acE<gt>
 
 =head1 LICENSE
+
 Copyright (C) Tasuku SUENAGA a.k.a. gunyarakun
 
 This library is free software; you can redistribute it and/or modify
