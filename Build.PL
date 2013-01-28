@@ -16,8 +16,9 @@ my $build = Module::Build->new(
         'Module::Build' => '0.38',
     },
     build_requires => {
-        'Test::More'     => '0.98',
-        'Test::Requires' => '0',
+        'Test::More'      => '0.98',
+        'Test::Requires'  => '0',
+        'Test::Execption' => '0',
     },
 
     no_index => { 'directory' => [ 'inc', 'author' ] },

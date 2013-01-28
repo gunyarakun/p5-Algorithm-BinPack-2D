@@ -67,11 +67,19 @@ sub add_item {
     my $self = shift;
     my $item = {@_};
 
-    unless ($item->{label} && $item->{width} > 0 && $item->{height} > 0) {
+    unless ($item->{label}
+        && $item->{width}
+        && $item->{height}
+        && $item->{width} > 0
+        && $item->{height} > 0) {
         croak 'Item must have label, width and height.';
     }
 
-    # TODO: check max_width & max_height
+    if (   $self->{binwidth} < $item->{width}
+        || $self->{binheight} < $item->{height}) {
+        croak
+          "Item size is too big. Max size is $self->{binwidth}x$self->{binheight}.";
+    }
 
     push @{ $self->{items} }, $item;
 }
