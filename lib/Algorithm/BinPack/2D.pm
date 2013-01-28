@@ -1,6 +1,10 @@
 # vim: set expandtab ts=4 sw=4 nowrap ft=perl ff=unix :
 package Algorithm::BinPack::2D;
 
+use strict;
+use warnings;
+use Carp;
+
 our $VERSION = 0.01;
 
 =head1 NAME
@@ -12,7 +16,7 @@ Algorithm::BinPack::2D - efficiently pack items into rectangles
 C<Algorithm::BinPack::2D> efficiently packs items into bins.
 The bins are given a maximum width and height,
 and items are packed in with as little empty space as possible.
-An example use would be backing up small images to concated images,
+An example use would be backing up small images to concatenated images,
 while minimizing the number of images required.
 
     my $bp = Algorithm::BinPack::2D->new(binwidth => 512, binheight => 512);
@@ -27,10 +31,6 @@ while minimizing the number of images required.
         print "     Item: ", $_->{label}, "\n" for @{ $_->{items} };
     }
 =cut
-
-use strict;
-use warnings;
-use Carp;
 
 =head1 METHODS
 
@@ -48,7 +48,7 @@ and is required.
 
 sub new {
     my $name = shift;
-    my $self = { @_ };
+    my $self = {@_};
 
     bless $self, $name;
 }
@@ -65,7 +65,7 @@ but any others can be specified, and will be saved.
 
 sub add_item {
     my $self = shift;
-    my $item = { @_ };
+    my $item = {@_};
 
     unless ($item->{label} && $item->{width} > 0 && $item->{height} > 0) {
         croak 'Item must have label, width and height.';
@@ -78,16 +78,16 @@ sub add_item {
 
 =item pack_bins
 
-Packs the items into bins. This method tries to leave as little empty
-space in each bin as possible. It returns a list of hashrefs with the
-key 'size' containing the total bin size, and 'items' containing an
-arrayref holding the items in the bin. Each item is in turn a hashref
-containing the keys 'label', 'size', and any others added to the item.
-If a fudge factor was used, each item will contain a key 'fudgesize',
-which is the size this item was fudged to.
+Packs the items into bins.
+This method tries to leave as little empty space in each bin as possible.
+It returns a list of hashrefs with the key
+'width' containing the total bin width,
+'height' containing the total bin height,
+and 'items' containing an arrayref holding the items in the bin.
+Each item is in turn a hashref containing the keys 'label', 'x', 'y', 'width' and 'height'.
 
     for my $bin ($bp->pack_bins) {
-        print "Bin size: ", $bin->{size}, "\n";
+        print "Bin width: ", $bin->{width}, " x ", $bin->{height}, "\n";
 
         for my $item (@{ $bin->{items} }) {
             printf "  %-6s %-20s\n", $_, $item->{$_} for keys %{ $item };
@@ -98,8 +98,8 @@ which is the size this item was fudged to.
 =cut
 
 sub pack_bins {
-    my $self = shift;
-    my $bin_width = $self->{binwidth};
+    my $self       = shift;
+    my $bin_width  = $self->{binwidth};
     my $bin_height = $self->{binheight};
 
     my @bins;
@@ -121,24 +121,32 @@ sub pack_bins {
 
     # filter filled nodes
     map {
-        my $bin = $_;
-        my $result = +{};
-        filter_filled_node($bin, $result);
-        $result;
+        my $bin   = $_;
+        my $items = [];
+        filter_filled_node($bin, $items);
+        +{
+            width  => $bin_width,
+            height => $bin_height,
+            items  => $items,
+          }
     } @bins;
-}
+} ## end sub pack_bins
 
 sub filter_filled_node {
     my ($bin, $filtered_nodes) = @_;
 
-    filter_filled_node($bin->{left}, $filtered_nodes) if $bin->{left};
+    filter_filled_node($bin->{left},  $filtered_nodes) if $bin->{left};
     filter_filled_node($bin->{right}, $filtered_nodes) if $bin->{right};
 
     if ($bin->{filled}) {
-        $filtered_nodes->{$bin->{label}} = +{
-            x => $bin->{x},
-            y => $bin->{y},
-        };
+        push @$filtered_nodes,
+          +{
+            x      => $bin->{x},
+            y      => $bin->{y},
+            label  => $bin->{label},
+            width  => $bin->{width},
+            height => $bin->{height},
+          };
     }
 }
 
@@ -146,71 +154,71 @@ sub make_new_bin {
     my ($bin_width, $bin_height) = @_;
 
     return +{
-        x => 0,
-        y => 0,
+        x      => 0,
+        y      => 0,
         filled => 0,
-        width => $bin_width,
+        width  => $bin_width,
         height => $bin_height,
-    }
+    };
 }
 
 sub pack_in_a_bin {
     my ($bin, $width, $height, $label) = @_;
 
     if ($bin->{left}) {
-        return pack_in_a_bin($bin->{left}, $width, $height, $label) ||
-               pack_in_a_bin($bin->{right}, $width, $height, $label);
+        return pack_in_a_bin($bin->{left}, $width, $height, $label)
+          || pack_in_a_bin($bin->{right}, $width, $height, $label);
     }
 
-    if ($bin->{filled} ||
-       $bin->{width} < $width ||
-       $bin->{height} < $height) {
+    if (   $bin->{filled}
+        || $bin->{width} < $width
+        || $bin->{height} < $height) {
         return;
     }
 
     if ($bin->{width} == $width && $bin->{height} == $height) {
         $bin->{filled} = 1;
-        $bin->{label} = $label;
+        $bin->{label}  = $label;
         return $bin;
     }
 
-    my $width_diff = $bin->{width} - $width;
+    my $width_diff  = $bin->{width} - $width;
     my $height_diff = $bin->{height} - $height;
 
     if ($width_diff > $height_diff) {
         $bin->{left} = +{
-            x => $bin->{x},
-            y => $bin->{y},
+            x      => $bin->{x},
+            y      => $bin->{y},
             filled => 0,
-            width => $width,
+            width  => $width,
             height => $bin->{height},
         };
         $bin->{right} = +{
-            x => $bin->{x} + $width,
-            y => $bin->{y},
+            x      => $bin->{x} + $width,
+            y      => $bin->{y},
             filled => 0,
-            width => $width_diff,
+            width  => $width_diff,
             height => $bin->{height},
         };
     } else {
         $bin->{left} = +{
-            x => $bin->{x},
-            y => $bin->{y},
+            x      => $bin->{x},
+            y      => $bin->{y},
             filled => 0,
-            width => $bin->{width},
+            width  => $bin->{width},
             height => $height,
         };
         $bin->{right} = +{
-            x => $bin->{x},
-            y => $bin->{y} + $height,
+            x      => $bin->{x},
+            y      => $bin->{y} + $height,
             filled => 0,
-            width => $bin->{width},
+            width  => $bin->{width},
             height => $height_diff,
         };
     }
 
     return pack_in_a_bin($bin->{left}, $width, $height, $label);
-}
+} ## end sub pack_in_a_bin
 
 sub sort_items {
     my $items = shift;
@@ -220,10 +228,12 @@ sub sort_items {
         my $bsize = $b->{width} * $b->{height};
 
         $bsize <=> $asize || $a->{label} cmp $b->{label}
-    } @{ $items };
+    } @{$items};
 }
 
 1;
+
+=back
 
 =head1 SEE ALSO
 

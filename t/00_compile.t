@@ -3,7 +3,7 @@ use strict;
 use Test::More;
 
 use_ok $_ for qw(
-    Algorithm::BinPack::2D
+  Algorithm::BinPack::2D
 );
 
 done_testing;

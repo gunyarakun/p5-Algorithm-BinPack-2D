@@ -10,7 +10,7 @@ my $build = Module::Build->new(
     license => 'perl',
 
     requires => {
-        perl                        => '5.008005',
+        perl => '5.008005',
     },
     configure_requires => {
         'Module::Build' => '0.38',
