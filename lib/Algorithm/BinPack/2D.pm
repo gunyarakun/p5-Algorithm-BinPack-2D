@@ -254,8 +254,12 @@ C<Algorithm::BinPack>
 
 =head1 AUTHOR
 
-Tasuku SUENAGA a.k.a. gunyarakun E<lt>tasuku-s-cpan@titech.ac<gt>
+Tasuku SUENAGA a.k.a. gunyarakun E<lt>tasuku-s-cpan ATAT titech.acE<gt>
 
 =head1 LICENSE
 
+Copyright (C) Tasuku SUENAGA a.k.a. gunyarakun
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 =cut

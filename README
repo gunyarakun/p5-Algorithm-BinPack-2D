@@ -56,6 +56,11 @@ SEE ALSO
     `Algorithm::BinPack'
 
 AUTHOR
-    Tasuku SUENAGA a.k.a. gunyarakun <tasuku-s-cpan@titech.ac<gt>
+    Tasuku SUENAGA a.k.a. gunyarakun <tasuku-s-cpan ATAT titech.ac>
 
 LICENSE
+    Copyright (C) Tasuku SUENAGA a.k.a. gunyarakun
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself. =cut
+
