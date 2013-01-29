@@ -136,15 +136,20 @@ sub pack_bins {
             width  => $max_width,
             height => $max_height,
             items  => $items,
-        }
+          }
     } @bins;
 } ## end sub pack_bins
 
 sub filter_filled_node {
     my ($bin, $filtered_nodes, $max_width, $max_height) = @_;
 
-    ($max_width, $max_height) = filter_filled_node($bin->{left},  $filtered_nodes, $max_width, $max_height) if $bin->{left};
-    ($max_width, $max_height) = filter_filled_node($bin->{right}, $filtered_nodes, $max_width, $max_height) if $bin->{right};
+    ($max_width, $max_height) =
+      filter_filled_node($bin->{left}, $filtered_nodes, $max_width, $max_height)
+      if $bin->{left};
+    ($max_width, $max_height) = filter_filled_node(
+        $bin->{right}, $filtered_nodes, $max_width,
+        $max_height
+    ) if $bin->{right};
 
     if ($bin->{filled}) {
         push @$filtered_nodes,
@@ -157,7 +162,7 @@ sub filter_filled_node {
           };
         my $max_x = $bin->{x} + $bin->{width};
         my $max_y = $bin->{y} + $bin->{height};
-        $max_width = $max_x if $max_width < $max_x;
+        $max_width  = $max_x if $max_width < $max_x;
         $max_height = $max_y if $max_height < $max_y;
     }
     ($max_width, $max_height);
@@ -237,10 +242,17 @@ sub sort_items {
     my $items = shift;
 
     sort {
-        my $asize = $a->{width} * $a->{height};
-        my $bsize = $b->{width} * $b->{height};
+        # Sorting by max(width, height) is the best heuristic.
+        my $abigger = $a->{width} > $a->{height} ? $a->{width} : $a->{height};
+        my $bbigger = $b->{width} > $b->{height} ? $b->{width} : $b->{height};
 
-        $bsize <=> $asize || $a->{label} cmp $b->{label}
+        my $asmaller = $a->{width} <= $a->{height} ? $a->{width} : $a->{height};
+        my $bsmaller = $b->{width} <= $b->{height} ? $b->{width} : $b->{height};
+
+             $bbigger <=> $abigger
+          || $bsmaller <=> $asmaller
+          || $b->{width} <=> $a->{width}
+          || $a->{label} cmp $b->{label}
     } @{$items};
 }
 

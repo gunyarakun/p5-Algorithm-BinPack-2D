@@ -62,38 +62,38 @@ subtest 'Basic algorithm' => sub {
                         'height' => 100
                     },
                     {
-                        'width'  => 100,
+                        'width'  => 200,
                         'y'      => 100,
-                        'label'  => 'four',
+                        'label'  => 'seven',
                         'x'      => 300,
-                        'height' => 200
-                    },
-                    {
-                        'width'  => 100,
-                        'y'      => 100,
-                        'label'  => 'three',
-                        'x'      => 400,
-                        'height' => 200
+                        'height' => 100
                     },
                     {
                         'width'  => 200,
-                        'y'      => 300,
-                        'label'  => 'seven',
+                        'y'      => 200,
+                        'label'  => 'two',
                         'x'      => 300,
                         'height' => 100
                     }
                 ]
             },
             {
-                'width'  => 200,
-                'height' => 100,
+                'width'  => 100,
+                'height' => 400,
                 'items'  => [
                     {
-                        'width'  => 200,
+                        'width'  => 100,
                         'y'      => 0,
-                        'label'  => 'two',
+                        'label'  => 'four',
                         'x'      => 0,
-                        'height' => 100
+                        'height' => 200
+                    },
+                    {
+                        'width'  => 100,
+                        'y'      => 200,
+                        'label'  => 'three',
+                        'x'      => 0,
+                        'height' => 200
                     }
                 ]
             }
